@@ -27,60 +27,77 @@ Your log settings must be set to `json`, a sample configuration is :
 
 ### Caddyfile
 ```
-http://127.0.0.1/ {
-  file_server
-  log graphite {
-    format json
-    output graphite <graphite server> 2003 "downloads{{ .Dirname }}.{{ .Filename }}.count" "1"
-  }
+{
+	auto_https off
+}
+
+http://localhost:8080 {
+	file_server browse
+	log graphite {
+		format json
+		output graphite {
+			server 127.0.0.1
+			port 2003
+			path "downloads{{ .DirName }}.{{ .FileName }}.count"
+			value "1"
+			methods GET
+		}
+	}
 }
 ```
 
 ### caddy.json
 ```
 {
-  "logging": {
-    "logs": {
-      "log0": {
-        "encoder": {
-            "format": "json"
-        },
-        "writer": {
-          "output": "graphite",
-          "server": "127.0.0.1",
-          "port": 2003,
-          "path": "downloads{{ .Dirname }}.{{ .Filename }}.count"
-          "value": "1"
-        },
-        "include": [
-          "http.log.access"
-        ]
-      }
-    }
-  },
-  "apps": {
-    "http": {
-      "servers": {
-        "srv0": {
-          "automatic_https": {
-            "disable": true
-          },
-          "listen": [
-            ":8080"
-          ],
-          "routes": [
-            {
-              "handle": [
-                {
-                  "handler": "file_server"
-                }
-              ]
+    "logging": {
+        "logs": {
+            "default": {
+                "exclude": [
+                    "http.log.access"
+                ]
+            },
+            "log0": {
+                "encoder": {
+                    "format": "json"
+                },
+                "writer": {
+                    "output": "graphite",
+                    "server": "127.0.0.1",
+                    "port": 2003,
+                    "path": "downloads{{ .DirName }}.{{ .FileName }}.count",
+                    "value": "1",
+                    "methods": ["GET"]
+                },
+                "include": [
+                    "http.log.access"
+                ]
             }
-          ],
-          "logs": {}
         }
-      }
+    },
+    "apps": {
+        "http": {
+            "servers": {
+                "srv0": {
+                    "automatic_https": {
+                        "disable": true
+                    },
+                    "listen": [
+                        ":8080"
+                    ],
+                    "routes": [
+                        {
+                            "handle": [
+                                {
+                                    "handler": "file_server",
+                                    "browse": {}
+                                }
+                            ]
+                        }
+                    ],
+                    "logs": {}
+                }
+            }
+        }
     }
-  }
 }
 ```
