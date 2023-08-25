@@ -6,6 +6,7 @@ require (
 	github.com/caddyserver/caddy/v2 v2.7.4
 	github.com/marpaia/graphite-golang v0.0.0-20190519024811-caf161d2c2b1
 	go.uber.org/zap v1.25.0
+	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0
 )
 
 require (
@@ -33,7 +34,6 @@ require (
 	github.com/zeebo/blake3 v0.2.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0 // indirect
 	golang.org/x/mod v0.11.0 // indirect
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
