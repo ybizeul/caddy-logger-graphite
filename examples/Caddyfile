@@ -1,0 +1,11 @@
+{
+	auto_https off
+}
+
+http://localhost:8080 {
+	file_server browse
+	log graphite {
+		format json
+		output graphite 127.0.0.1 2003 "downloads{{ .DirName }}.{{ .FileName }}.count" "1"
+	}
+}

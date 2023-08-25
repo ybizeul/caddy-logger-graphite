@@ -1,0 +1,50 @@
+{
+    "logging": {
+        "logs": {
+            "default": {
+                "exclude": [
+                    "http.log.access"
+                ]
+            },
+            "log0": {
+                "encoder": {
+                    "format": "json"
+                },
+                "writer": {
+                    "output": "graphite",
+                    "server": "127.0.0.1",
+                    "port": 2003,
+                    "path": "downloads{{ .DirName }}.{{ .FileName }}.count",
+                    "value": "1"
+                },
+                "include": [
+                    "http.log.access"
+                ]
+            }
+        }
+    },
+    "apps": {
+        "http": {
+            "servers": {
+                "srv0": {
+                    "automatic_https": {
+                        "disable": true
+                    },
+                    "listen": [
+                        ":8080"
+                    ],
+                    "routes": [
+                        {
+                            "handle": [
+                                {
+                                    "handler": "file_server"
+                                }
+                            ]
+                        }
+                    ],
+                    "logs": {}
+                }
+            }
+        }
+    }
+}
