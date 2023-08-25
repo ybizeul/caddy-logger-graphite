@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
@@ -143,7 +144,7 @@ func (g *GraphiteLog) String() string {
 }
 
 func (g *GraphiteLog) WriterKey() string {
-	return "graphite_log"
+	return fmt.Sprintf("graphite_log_%s_%d_%s_%s_%s", g.Server, g.Port, g.Path, g.Value, strings.Join(g.Methods, ","))
 }
 
 func (l *GraphiteLog) OpenWriter() (io.WriteCloser, error) {
