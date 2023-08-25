@@ -6,6 +6,12 @@ http://localhost:8080 {
 	file_server browse
 	log graphite {
 		format json
-		output graphite 127.0.0.1 2003 "downloads{{ .DirName }}.{{ .FileName }}.count" "1"
+		output graphite {
+			server 127.0.0.1
+			port 2003
+			path "downloads{{ .DirName }}.{{ .FileName }}.count"
+			value "1"
+			methods GET
+		}
 	}
 }

@@ -15,7 +15,8 @@
                     "server": "127.0.0.1",
                     "port": 2003,
                     "path": "downloads{{ .DirName }}.{{ .FileName }}.count",
-                    "value": "1"
+                    "value": "1",
+                    "methods": ["GET"]
                 },
                 "include": [
                     "http.log.access"
@@ -37,7 +38,8 @@
                         {
                             "handle": [
                                 {
-                                    "handler": "file_server"
+                                    "handler": "file_server",
+                                    "browse": {}
                                 }
                             ]
                         }

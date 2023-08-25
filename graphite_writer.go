@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/marpaia/graphite-golang"
@@ -51,6 +52,11 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 		g.GraphiteLog.logger.Error(err.Error())
 	}
 	if j.Status == 200 {
+		if len(g.GraphiteLog.Methods) > 0 {
+			if !slices.Contains(g.GraphiteLog.Methods, j.Request.Method) {
+				return len(p), nil
+			}
+		}
 		sanitized := strings.Replace(j.Request.URI, ".", "_", -1)[1:]
 		j.DirName = strings.Replace(path.Dir(sanitized), "/", ".", -1)[1:]
 		j.FileName = strings.Replace(path.Base(sanitized), ".", "_", -1)

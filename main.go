@@ -57,6 +57,9 @@ type GraphiteLog struct {
 	// Value to be sent, can be templated
 	Value string `json:"value"`
 
+	// Methods to be logged
+	Methods []string `json:"methods"`
+
 	logger *zap.Logger
 }
 
@@ -73,39 +76,43 @@ func (l *GraphiteLog) Provision(ctx caddy.Context) error {
 }
 
 func (l *GraphiteLog) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	for d.Next() {
-		if d.NextArg() {
-			// Gaphite Server
+	if !d.NextArg() {
+		return d.ArgErr()
+	}
+	for block := d.Nesting(); d.NextBlock(block); {
+		switch d.Val() {
+		case "server":
+			if !d.NextArg() {
+				return d.ArgErr()
+			}
 			l.Server = d.Val()
-		} else {
-			return d.ArgErr()
-		}
-		if d.NextArg() {
-			// Graphite Port
+
+		case "port":
+			if !d.NextArg() {
+				return d.ArgErr()
+			}
 			p, err := strconv.Atoi(d.Val())
 			if err != nil {
 				l.logger.Error(err.Error())
-				return err
+				return d.ArgErr()
 			}
 			l.Port = p
-		} else {
-			return d.ArgErr()
-		}
-		if d.NextArg() {
-			// Graphite Path
+		case "path":
+			if !d.NextArg() {
+				return d.ArgErr()
+			}
 			l.Path = d.Val()
-		} else {
-			return d.ArgErr()
-		}
-		if d.NextArg() {
-			// Graphite Value
+
+		case "value":
+			if !d.NextArg() {
+				return d.ArgErr()
+			}
 			l.Value = d.Val()
-		} else {
-			return d.ArgErr()
-		}
-		if d.NextArg() {
-			// too many args
-			return d.ArgErr()
+
+		case "methods":
+			for d.NextArg() {
+				l.Methods = append(l.Methods, d.Val())
+			}
 		}
 	}
 	return nil
@@ -117,7 +124,7 @@ func (l *GraphiteLog) Validate() error {
 	}
 
 	if l.Port == 0 {
-		return fmt.Errorf("No Port Set")
+		l.Port = 2003
 	}
 
 	if l.Path == "" {
@@ -125,7 +132,7 @@ func (l *GraphiteLog) Validate() error {
 	}
 
 	if l.Value == "" {
-		return fmt.Errorf("No Value Set")
+		l.Value = "1"
 	}
 
 	return nil
