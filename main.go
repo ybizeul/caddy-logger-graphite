@@ -43,8 +43,10 @@ Templating is available as follow :
 	.DirName  string
 	.FileName string
 */
+
+// GraphiteLog is a Caddy logger used to send serve activity to a Graphite database.
 type GraphiteLog struct {
-	// IP addess or ost name of the graphite server
+	// IP addess or host name of the graphite server
 	Server string `json:"server"`
 
 	// Port number to be used (usually 2003)
