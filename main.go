@@ -16,7 +16,8 @@ func init() {
 }
 
 /*
-GraphiteLog is a Caddy logger used to send serve activity to a Graphite database.
+GraphiteLog is a Caddy logger used to send server activity to a Graphite
+database.
 
 Templating is available as follow :
 
