@@ -16,7 +16,7 @@ func init() {
 }
 
 /*
-	GraphiteLog is a Caddy logger used to send serve activity to a Graphite database.
+GraphiteLog is a Caddy logger used to send serve activity to a Graphite database.
 
 Templating is available as follow :
 
@@ -40,13 +40,11 @@ Templating is available as follow :
 	.Status
 	.RespHeaders map[string][]string
 
-	.DirName  string
-	.FileName string
+	.DirName
+	.FileName
 */
-
-// GraphiteLog is a Caddy logger used to send serve activity to a Graphite database.
 type GraphiteLog struct {
-	// IP addess or host name of the graphite server
+	// IP address or host name of the graphite server
 	Server string `json:"server"`
 
 	// Port number to be used (usually 2003)
