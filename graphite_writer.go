@@ -44,7 +44,7 @@ type GraphiteWriter struct {
 }
 
 func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
-	g.GraphiteLog.logger.Info(string(p))
+	// g.GraphiteLog.logger.Info(string(p))
 	j := LogLine{}
 	err = json.Unmarshal(p, &j)
 	if err != nil {
