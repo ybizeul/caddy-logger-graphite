@@ -31,7 +31,7 @@ http://127.0.0.1/ {
   file_server
   log graphite {
     format json
-    output graphite <graphite server> 2003 "downloads{{ .Dirname }}.{{ .Filename }}.count"
+    output graphite <graphite server> 2003 "downloads{{ .Dirname }}.{{ .Filename }}.count" "1"
   }
 }
 ```
@@ -50,6 +50,7 @@ http://127.0.0.1/ {
           "server": "127.0.0.1",
           "port": 2003,
           "path": "downloads{{ .Dirname }}.{{ .Filename }}.count"
+          "value": "1"
         },
         "include": [
           "http.log.access"
