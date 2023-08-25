@@ -15,11 +15,46 @@ func init() {
 	caddy.RegisterModule(GraphiteLog{})
 }
 
+/*
+	GraphiteLog is a Caddy logger used to send serve activity to a Graphite database.
+
+Templating is available as follow :
+
+	.Level
+	.Date
+	.Logger
+	.Msg
+	.Request
+		.RemoteIP
+		.RemotePort
+		.ClientIP
+		.Proto
+		.Method
+		.Host
+		.URI
+		.Headers
+	.BytesRead
+	.UserID
+	.Duration
+	.Size
+	.Status
+	.RespHeaders map[string][]string
+
+	.DirName  string
+	.FileName string
+*/
 type GraphiteLog struct {
+	// IP addess or ost name of the graphite server
 	Server string `json:"server"`
-	Port   int    `json:"port"`
-	Path   string `json:"path"`
-	Value  string `json:"value"`
+
+	// Port number to be used (usually 2003)
+	Port int `json:"port"`
+
+	// Metrics Path, can be templated
+	Path string `json:"path"`
+
+	// Value to be sent, can be templated
+	Value string `json:"value"`
 
 	logger *zap.Logger
 }
