@@ -58,7 +58,7 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 			}
 		}
 		sanitized := strings.Replace(j.Request.URI, ".", "_", -1)[1:]
-		j.DirName = strings.Replace(path.Dir(sanitized), "/", ".", -1)[1:]
+		j.DirName = strings.Replace(path.Dir(sanitized), "/", ".", -1)
 		j.FileName = strings.Replace(path.Base(sanitized), ".", "_", -1)
 
 		pathTemplate, err := template.New("path").Parse(g.GraphiteLog.Path)
