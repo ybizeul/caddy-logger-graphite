@@ -89,14 +89,17 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 		err = g.Graphite.SimpleSend(path, value)
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
+
 			// Try to recover
 			if err = g.Graphite.Connect(); err != nil {
 				g.GraphiteLog.logger.Error(err.Error())
 			} else {
 				g.GraphiteLog.logger.Error("Reconnected")
 			}
+
 			if err = g.Graphite.SimpleSend(path, value); err != nil {
 				g.GraphiteLog.logger.Error("Unrecoverable", zap.String("error", err.Error()))
+				return 0, err
 			} else {
 				g.GraphiteLog.logger.Error("Recovered")
 			}
