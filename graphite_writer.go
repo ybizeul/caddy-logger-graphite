@@ -57,7 +57,6 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 				return len(p), nil
 			}
 		}
-
 		sanitized := strings.Replace(j.Request.URI, ".", "_", -1)[1:]
 		j.DirName = strings.Replace(path.Dir(sanitized), "/", ".", -1)
 		j.FileName = strings.Replace(path.Base(sanitized), ".", "_", -1)
@@ -90,6 +89,17 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 		err = g.Graphite.SimpleSend(path, value)
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
+			// Try to recover
+			if err = g.Graphite.Connect(); err != nil {
+				g.GraphiteLog.logger.Error(err.Error())
+			} else {
+				g.GraphiteLog.logger.Error("Reconnected")
+			}
+			if err = g.Graphite.SimpleSend(path, value); err != nil {
+				g.GraphiteLog.logger.Error("Unrecoverable", zap.String("error", err.Error()))
+			} else {
+				g.GraphiteLog.logger.Error("Recovered")
+			}
 		}
 	}
 	return len(p), nil
