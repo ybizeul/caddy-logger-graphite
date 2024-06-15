@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"path"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/marpaia/graphite-golang"
@@ -57,6 +58,24 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 				return len(p), nil
 			}
 		}
+
+		// Verify request and headers data
+		// return is size is not equal to content-length header
+		// (transfer aborted)
+		r_size := j.Size
+		_, ok := j.RespHeaders["Content-Length"]
+
+		if ok {
+			h_size_s := j.RespHeaders["Content-Length"][0]
+			h_size, err := strconv.Atoi(h_size_s)
+			if err == nil {
+				if r_size != int64(h_size) {
+					g.GraphiteLog.logger.Info("Not logging. Transfer aborted", zap.Int64("size", r_size), zap.String("Content-Length", h_size_s))
+					return len(p), nil
+				}
+			}
+		}
+
 		sanitized := strings.Replace(j.Request.URI, ".", "_", -1)[1:]
 		j.DirName = strings.Replace(path.Dir(sanitized), "/", ".", -1)
 		j.FileName = strings.Replace(path.Base(sanitized), ".", "_", -1)
