@@ -140,7 +140,7 @@ func (l *GraphiteLog) Validate() error {
 }
 
 func (g *GraphiteLog) String() string {
-	return "graphite"
+	return fmt.Sprintf("graphite[%s:%d]", g.Server, g.Port)
 }
 
 func (g *GraphiteLog) WriterKey() string {

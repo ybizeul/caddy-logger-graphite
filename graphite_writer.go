@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/marpaia/graphite-golang"
 	"go.uber.org/zap"
 )
 
@@ -42,7 +41,13 @@ type Request struct {
 
 type GraphiteWriter struct {
 	GraphiteLog *GraphiteLog
-	Graphite    *graphite.Graphite
+	Graphite    GraphiteInterface
+}
+
+type GraphiteInterface interface {
+	SimpleSend(path string, value string) error
+	Connect() error
+	Disconnect() error
 }
 
 func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
@@ -55,12 +60,13 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 	if j.Status == 200 {
 		if len(g.GraphiteLog.Methods) > 0 {
 			if !slices.Contains(g.GraphiteLog.Methods, j.Request.Method) {
+				g.GraphiteLog.logger.Debug("method not defined for logging", zap.String("method", j.Request.Method))
 				return len(p), nil
 			}
 		}
 
 		// Verify request and headers data
-		// return is size is not equal to content-length header
+		// return if size is not equal to content-length header
 		// (transfer aborted)
 		r_size := j.Size
 		_, ok := j.RespHeaders["Content-Length"]
@@ -68,15 +74,22 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 		if ok {
 			h_size_s := j.RespHeaders["Content-Length"][0]
 			h_size, err := strconv.Atoi(h_size_s)
-			if err == nil {
+			if err != nil {
+				g.GraphiteLog.logger.Error("Could not convert Content-Length header to int", zap.String("Content-Length", h_size_s))
+			} else {
 				if r_size != int64(h_size) {
 					g.GraphiteLog.logger.Info("Not logging. Transfer aborted", zap.Int64("size", r_size), zap.String("Content-Length", h_size_s))
 					return len(p), nil
 				}
 			}
+		} else {
+			g.GraphiteLog.logger.Debug("Not checking transfer completeness (No Content-Length header)")
 		}
 
+		// As gra^hite uses "." as metrics separator, we replace them with "_"
 		sanitized := strings.Replace(j.Request.URI, ".", "_", -1)[1:]
+
+		// Populate additional fields for template
 		j.DirName = strings.Replace(path.Dir(sanitized), "/", ".", -1)
 		j.FileName = strings.Replace(path.Base(sanitized), ".", "_", -1)
 
@@ -84,6 +97,7 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
 		}
+
 		valueTemplate, err := template.New("path").Parse(g.GraphiteLog.Value)
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
@@ -94,6 +108,7 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
 		}
+
 		path := r.String()
 
 		r.Reset()
@@ -128,5 +143,5 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 }
 
 func (g *GraphiteWriter) Close() error {
-	return nil
+	return g.Graphite.Disconnect()
 }
