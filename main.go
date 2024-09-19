@@ -8,7 +8,6 @@ import (
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
-	gr "github.com/gguridi/graphite-client"
 	"go.uber.org/zap"
 )
 
@@ -154,14 +153,9 @@ func (l *GraphiteLog) OpenWriter() (io.WriteCloser, error) {
 	// 	l.logger.Error(err.Error())
 	// }
 
-	client := gr.NewGraphiteTCP(&gr.Config{
-		Host: l.Server,
-		Port: l.Port,
-	})
-
 	return &GraphiteWriter{
 		GraphiteLog: l,
-		Graphite:    client,
+		//		Graphite:    client,
 	}, nil
 }
 

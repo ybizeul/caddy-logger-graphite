@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gguridi/graphite-client"
 	"go.uber.org/zap"
 )
 
@@ -120,7 +121,12 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 
 		g.GraphiteLog.logger.Info("Writing value to carbon", zap.String("path", path), zap.String("value", value))
 
-		_, err = g.Graphite.Send(path, value)
+		client := graphite.NewGraphiteTCP(&graphite.Config{
+			Host: g.GraphiteLog.Server,
+			Port: g.GraphiteLog.Port,
+		})
+
+		_, err = client.Send(path, value)
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
 
