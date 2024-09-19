@@ -144,6 +144,7 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 			// 	g.GraphiteLog.logger.Error("Recovered")
 			// }
 		}
+		_ = client.Disconnect()
 	}
 	return len(p), nil
 }
