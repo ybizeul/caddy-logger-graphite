@@ -126,6 +126,11 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 			Port: g.GraphiteLog.Port,
 		})
 
+		err = client.Connect()
+		if err != nil {
+			g.GraphiteLog.logger.Error(err.Error())
+		}
+
 		_, err = client.Send(path, value)
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
