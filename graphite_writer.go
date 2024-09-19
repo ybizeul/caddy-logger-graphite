@@ -143,5 +143,6 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 }
 
 func (g *GraphiteWriter) Close() error {
+	g.GraphiteLog.logger.Error("Closing connection")
 	return g.Graphite.Disconnect()
 }

@@ -154,6 +154,7 @@ func (l *GraphiteLog) OpenWriter() (io.WriteCloser, error) {
 		l.logger.Error(err.Error())
 	}
 
+	l.logger.Error("Connected to Graphite", zap.String("server", l.Server), zap.Int("port", l.Port))
 	return &GraphiteWriter{
 		GraphiteLog: l,
 		Graphite:    graphite,
