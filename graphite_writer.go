@@ -48,7 +48,7 @@ type GraphiteInterface interface {
 	Send(path string, value string) (int, error)
 	Connect() error
 	Reconnect() error
-	// Disconnect() error
+	Disconnect() error
 }
 
 func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
@@ -155,6 +155,7 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 }
 
 func (g *GraphiteWriter) Close() error {
+	g.Graphite.Disconnect()
 	return nil
 	// g.GraphiteLog.logger.Error("Closing connection")
 }

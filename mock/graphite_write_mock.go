@@ -52,6 +52,20 @@ func (mr *MockGraphiteInterfaceMockRecorder) Connect() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connect", reflect.TypeOf((*MockGraphiteInterface)(nil).Connect))
 }
 
+// Disconnect mocks base method.
+func (m *MockGraphiteInterface) Disconnect() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Disconnect")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Disconnect indicates an expected call of Disconnect.
+func (mr *MockGraphiteInterfaceMockRecorder) Disconnect() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Disconnect", reflect.TypeOf((*MockGraphiteInterface)(nil).Disconnect))
+}
+
 // Reconnect mocks base method.
 func (m *MockGraphiteInterface) Reconnect() error {
 	m.ctrl.T.Helper()
