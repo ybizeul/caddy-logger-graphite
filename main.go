@@ -154,15 +154,17 @@ func (l *GraphiteLog) OpenWriter() (io.WriteCloser, error) {
 		Port: l.Port,
 	})
 
-	err := client.Connect()
+	result := &GraphiteWriter{
+		GraphiteLog: l,
+		Graphite:    client,
+	}
+
+	err := result.Graphite.Connect()
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
 
-	return &GraphiteWriter{
-		GraphiteLog: l,
-		Graphite:    client,
-	}, nil
+	return result, nil
 }
 
 // Interface guards
