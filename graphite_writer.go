@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gguridi/graphite-client"
 	"go.uber.org/zap"
 )
 
@@ -47,7 +46,8 @@ type GraphiteWriter struct {
 
 type GraphiteInterface interface {
 	Send(path string, value string) (int, error)
-	// Connect() error
+	Connect() error
+	Reconnect() error
 	// Disconnect() error
 }
 
@@ -121,20 +121,21 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 
 		g.GraphiteLog.logger.Info("Writing value to carbon", zap.String("path", path), zap.String("value", value))
 
-		client := graphite.NewGraphiteTCP(&graphite.Config{
-			Host: g.GraphiteLog.Server,
-			Port: g.GraphiteLog.Port,
-		})
-
-		err = client.Connect()
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
 		}
 
-		_, err = client.Send(path, value)
+		_, err = g.Graphite.Send(path, value)
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
-
+			err := g.Graphite.Reconnect()
+			if err != nil {
+				g.GraphiteLog.logger.Error(err.Error())
+			}
+			_, err = g.Graphite.Send(path, value)
+			if err != nil {
+				g.GraphiteLog.logger.Error(err.Error())
+			}
 			// // Try to recover
 			// if err = g.Graphite.Connect(); err != nil {
 			// 	g.GraphiteLog.logger.Error(err.Error())
@@ -149,7 +150,6 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 			// 	g.GraphiteLog.logger.Error("Recovered")
 			// }
 		}
-		_ = client.Disconnect()
 	}
 	return len(p), nil
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/gguridi/graphite-client"
 	"go.uber.org/zap"
 )
 
@@ -148,14 +149,19 @@ func (g *GraphiteLog) WriterKey() string {
 
 func (l *GraphiteLog) OpenWriter() (io.WriteCloser, error) {
 	// Open connection to Graphite server
-	// graphite, err := graphite.NewGraphiteUDP(l.Server, l.Port)
-	// if err != nil {
-	// 	l.logger.Error(err.Error())
-	// }
+	client := graphite.NewGraphiteTCP(&graphite.Config{
+		Host: l.Server,
+		Port: l.Port,
+	})
+
+	err := client.Connect()
+	if err != nil {
+		l.logger.Error(err.Error())
+	}
 
 	return &GraphiteWriter{
 		GraphiteLog: l,
-		//		Graphite:    client,
+		Graphite:    client,
 	}, nil
 }
 

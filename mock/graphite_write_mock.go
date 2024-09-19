@@ -38,6 +38,34 @@ func (m *MockGraphiteInterface) EXPECT() *MockGraphiteInterfaceMockRecorder {
 	return m.recorder
 }
 
+// Connect mocks base method.
+func (m *MockGraphiteInterface) Connect() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Connect")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Connect indicates an expected call of Connect.
+func (mr *MockGraphiteInterfaceMockRecorder) Connect() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connect", reflect.TypeOf((*MockGraphiteInterface)(nil).Connect))
+}
+
+// Reconnect mocks base method.
+func (m *MockGraphiteInterface) Reconnect() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Reconnect")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Reconnect indicates an expected call of Reconnect.
+func (mr *MockGraphiteInterfaceMockRecorder) Reconnect() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Reconnect", reflect.TypeOf((*MockGraphiteInterface)(nil).Reconnect))
+}
+
 // Send mocks base method.
 func (m *MockGraphiteInterface) Send(path, value string) (int, error) {
 	m.ctrl.T.Helper()
