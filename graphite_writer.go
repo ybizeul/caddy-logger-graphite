@@ -45,9 +45,9 @@ type GraphiteWriter struct {
 }
 
 type GraphiteInterface interface {
-	SimpleSend(path string, value string) error
-	Connect() error
-	Disconnect() error
+	Send(path string, value string) (int, error)
+	// Connect() error
+	// Disconnect() error
 }
 
 func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
@@ -86,7 +86,7 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 			g.GraphiteLog.logger.Debug("Not checking transfer completeness (No Content-Length header)")
 		}
 
-		// As gra^hite uses "." as metrics separator, we replace them with "_"
+		// As graphite uses "." as metrics separator, we replace them with "_"
 		sanitized := strings.Replace(j.Request.URI, ".", "_", -1)[1:]
 
 		// Populate additional fields for template
@@ -120,29 +120,29 @@ func (g *GraphiteWriter) Write(p []byte) (n int, err error) {
 
 		g.GraphiteLog.logger.Info("Writing value to carbon", zap.String("path", path), zap.String("value", value))
 
-		err = g.Graphite.SimpleSend(path, value)
+		_, err = g.Graphite.Send(path, value)
 		if err != nil {
 			g.GraphiteLog.logger.Error(err.Error())
 
-			// Try to recover
-			if err = g.Graphite.Connect(); err != nil {
-				g.GraphiteLog.logger.Error(err.Error())
-			} else {
-				g.GraphiteLog.logger.Error("Reconnected")
-			}
+			// // Try to recover
+			// if err = g.Graphite.Connect(); err != nil {
+			// 	g.GraphiteLog.logger.Error(err.Error())
+			// } else {
+			// 	g.GraphiteLog.logger.Error("Reconnected")
+			// }
 
-			if err = g.Graphite.SimpleSend(path, value); err != nil {
-				g.GraphiteLog.logger.Error("Unrecoverable", zap.String("error", err.Error()))
-				return 0, err
-			} else {
-				g.GraphiteLog.logger.Error("Recovered")
-			}
+			// if err = g.Graphite.SimpleSend(path, value); err != nil {
+			// 	g.GraphiteLog.logger.Error("Unrecoverable", zap.String("error", err.Error()))
+			// 	return 0, err
+			// } else {
+			// 	g.GraphiteLog.logger.Error("Recovered")
+			// }
 		}
 	}
 	return len(p), nil
 }
 
 func (g *GraphiteWriter) Close() error {
-	g.GraphiteLog.logger.Error("Closing connection")
-	return g.Graphite.Disconnect()
+	return nil
+	// g.GraphiteLog.logger.Error("Closing connection")
 }

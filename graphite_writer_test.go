@@ -421,7 +421,7 @@ func TestWriteLog(t *testing.T) {
 		Graphite: grmock,
 	}
 
-	grmock.EXPECT().SimpleSend("downloads.file.file_txt.count", "1").Return(nil)
+	grmock.EXPECT().Send("downloads.file.file_txt.count", "1").Return(nil)
 
 	i, err := g.Write([]byte(completeLogLine))
 	if err != nil {

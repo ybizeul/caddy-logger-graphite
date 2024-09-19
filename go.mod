@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/caddyserver/caddy/v2 v2.7.4
-	github.com/marpaia/graphite-golang v0.0.0-20190519024811-caf161d2c2b1
+	github.com/gguridi/graphite-client v0.1.2
 	go.uber.org/mock v0.4.0
 	go.uber.org/zap v1.25.0
 	golang.org/x/exp v0.0.0-20230310171629-522b1b587ee0
