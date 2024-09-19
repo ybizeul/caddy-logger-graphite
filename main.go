@@ -149,12 +149,11 @@ func (g *GraphiteLog) WriterKey() string {
 
 func (l *GraphiteLog) OpenWriter() (io.WriteCloser, error) {
 	// Open connection to Graphite server
-	graphite, err := graphite.NewGraphite(l.Server, l.Port)
+	graphite, err := graphite.NewGraphiteUDP(l.Server, l.Port)
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
 
-	l.logger.Error("Connected to Graphite", zap.String("server", l.Server), zap.Int("port", l.Port))
 	return &GraphiteWriter{
 		GraphiteLog: l,
 		Graphite:    graphite,
